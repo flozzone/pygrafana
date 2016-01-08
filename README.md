@@ -25,21 +25,22 @@ Change it to your needs.
     python setup.py sdist
     pip install dist/pygrafana-LATEST.tar.gz
 
-After installing pygrafana, you can run the development webserver by simply calling the script
+After installing pygrafana, you can (and you'll need to) run the development webserver by simply calling the script
 
     pygrafana
 
-This will only provide the API for grafana, not the static files it needs to run the frontend. These
+This will do the database initialization, otherwise starting uwsgi without initializing the database will fail.
+The development webserver will only provide the grafana API, not the static files it needs to run the frontend. These
 are provided by the nginx webserver.
 
 ### Start uwsgi application server
 
-uwsgi --module pygrafana.app --callable app --master --socket 0.0.0.0:8889
+    uwsgi --module pygrafana.app --callable app --master --socket 0.0.0.0:8889
 
 ### Configure nginx
 
     server {
-        # server index.html
+        # serve index.html
         location /grafana {
             alias /var/www/grafana/public;
             index index.html;
@@ -59,3 +60,5 @@ uwsgi --module pygrafana.app --callable app --master --socket 0.0.0.0:8889
             uwsgi_modifier1 30;
         }
     }
+    
+And reload nginx.
